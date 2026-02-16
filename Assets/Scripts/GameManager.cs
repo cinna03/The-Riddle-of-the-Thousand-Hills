@@ -1,16 +1,16 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     [Header("UI References")]
-    public Text clueText;
-    public Text letterText;
-    public Text progressText;
+    public TextMeshProUGUI clueText;
+    public TextMeshProUGUI letterText;
+    public TextMeshProUGUI progressText;
     public GameObject congratsPanel;
-    public Text congratsText;
+    public TextMeshProUGUI congratsText;
     public GameObject losePanel;
 
     [Header("Game Objects")]
@@ -39,7 +39,8 @@ public class GameManager : MonoBehaviour
     private int currentLayer = 0;
     private string builtWord = "";
 
-    public int CurrentLayer => currentLayer; // Safe public access
+    // Read-only access for other scripts
+    public int CurrentLayer => currentLayer;
 
     void Awake()
     {
@@ -62,25 +63,26 @@ public class GameManager : MonoBehaviour
 
     public void CompleteLayer(int layerIndex)
     {
+        // Prevent skipping layers
         if (layerIndex != currentLayer)
             return;
 
-        // Add letter
+        // Add letter reward
         builtWord += letters[layerIndex];
         UpdateLetters();
 
-        // Show congratulations
+        // Show congratulations panel
         if (congratsPanel != null)
         {
             congratsPanel.SetActive(true);
             congratsText.text = congratsMessages[layerIndex];
         }
 
-        // Move to next layer
+        // Move forward
         currentLayer++;
         UpdateProgress();
 
-        // Hide clue while congrats is showing
+        // Temporarily hide clue
         if (clueText != null)
             clueText.gameObject.SetActive(false);
 
@@ -92,7 +94,7 @@ public class GameManager : MonoBehaviour
         if (congratsPanel != null)
             congratsPanel.SetActive(false);
 
-        if (currentLayer >= 5)
+        if (currentLayer >= clues.Length)
         {
             UnlockDoor();
         }
